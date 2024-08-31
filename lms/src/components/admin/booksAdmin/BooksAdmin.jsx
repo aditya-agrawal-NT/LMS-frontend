@@ -7,14 +7,16 @@ import BooksModal from "./BooksModal";
 import Table from "../../shared/table/Table";
 import Paginate from "../../shared/pagination/Paginate";
 import { createBook, deleteBooks, fetchAllBooks } from "../../service/BookService";
+import AssignUserModal from "./AssignUserModal";
 
 const BooksAdmin = () => {
   const [search, setSearch] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [selectedBook, setSelectedBook] = useState(null)
   const [bookList, setBookList] = useState([])
   const [pageNumber, setPageNumber] = useState(0)
-  const [pageSize, setPageSize] = useState(2)
+  const [pageSize, setPageSize] = useState(11)
   const [totalPages, setTotalPages] = useState(0)
 
   const loadBooks = async () => {
@@ -55,19 +57,19 @@ const BooksAdmin = () => {
         title: "Title"
     },
     {
-        index: 3,
-        title: "Author"
-    },
+      index: 3,
+      title: "Author"
+  },
     {
-        index: 4,
+        index: 5,
         title: "Quantity"
     },
     {
-        index: 5,
+        index: 6,
         title: "Modifications"
     },
     {
-        index: 6,
+        index: 7,
         title: "Issuances"
     }
   ]
@@ -98,6 +100,15 @@ const BooksAdmin = () => {
     }
   }
 
+  const openAssignUser = (book=null) => {
+    setSelectedBook(book);
+    setIsAssignModalOpen(true);
+  }
+  const closeAssignUser = () => {
+    setIsAssignModalOpen(false);
+    setSelectedBook(null);
+  };
+
   const handleAddBook = () => {
     loadBooks();
   }
@@ -126,11 +137,12 @@ const BooksAdmin = () => {
           <FaSearch />
         </div>
       </div>
-      <Button text="Add Book" type="button" onClick={handleOpenModal}/>
+      <Button text="Add Book" type="button" onClick={() => handleOpenModal(null)}/>
       </div>
       </div>
-      <Table onEditClick={handleOpenModal} fields={fields} entries={bookList} type={'book'} onDeleteClick={handleDeleteBook}/>
-      <BooksModal title={selectedBook ? 'Edit Book' : 'Add New Book'} isModalOpen={isModalOpen} handleSaveBook={handleSaveBook} handleCloseModal={handleCloseModal} handleAddBook={handleAddBook} selectedBook={selectedBook}/>
+      <Table onEditClick={handleOpenModal} fields={fields} entries={bookList} type={'book'} onDeleteClick={handleDeleteBook} onAssignClick={openAssignUser} />
+      <BooksModal title={selectedBook ? 'Edit Book' : 'Add New Book'} isModalOpen={isModalOpen} handleSaveBook={handleSaveBook} handleCloseModal={handleCloseModal} handleAddBook={handleAddBook} selectedBook={selectedBook} />
+      <AssignUserModal title={'Assign To User'} isAssignModalOpen={isAssignModalOpen} closeAssignModal={closeAssignUser} selectedBook={selectedBook} />
       <div className="paginate"><Paginate currentPage={pageNumber} totalPages={totalPages} onPageChange={setPageNumber} /></div>
     </div>
   );

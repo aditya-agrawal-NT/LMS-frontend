@@ -1,18 +1,60 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import "./Login2.css";
 import image from "../../../assets/login-image.jpeg";
 import Button from "../../shared/button/Button";
+import { userLogin } from "../../service/UserService";
+import { login } from "../../../redux/authentication/authActions";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux'
 
 const Login2 = () => {
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const auth = useSelector(state => state.auth);
+
     const [role, setRole] = useState("user");
+    const [userName, setUserName] = useState("")
+    const [password, setPassword] = useState("")
+    const [checkboxChecked, setCheckboxChecked] = useState(false)
+    const [errors, setErrors] = useState({});
+
+    useEffect (() => {
+      if (auth && auth.token) {
+        if (auth.role === 'ROLE_ADMIN') {
+          navigate('/admin');
+        } else {
+          navigate('/user');
+        }
+      }
+    }, [auth, navigate]);
   
-    const handleSubmit = (event) => {
-      event.preventDefault();
+    const validateForm = () => {
+      let formErrors = {};
+      if (!userName) formErrors.userName = "Username is Required!";
+      if (!password) formErrors.password = "Password is Required!";
+      if (!checkboxChecked) formErrors.checkbox = "You must agree!";
+      return formErrors;
     };
   
-    const handleRoleChange = (event) => {
-      setRole(event.target.value);
+    const handleLoginClick = async () => {
+
+      const formErrors = validateForm();
+      if (Object.keys(formErrors).length > 0){
+        setErrors(formErrors)
+        return;
+      }
+
+      try{
+        const data = await userLogin({userName, password});
+        dispatch(login(data));
+        window.localStorage.setItem('authtoken', data.token);
+      } catch(error){
+        console.log(error)
+      }
     };
+  
   return (
     <div className="login-page">
       <div className="login-container">
@@ -26,49 +68,26 @@ const Login2 = () => {
           <div className="login-info">
           <p>Welcome back!</p>
           <p>Please log in to access your library account.</p>
-          {/* <p></p> */}
-          </div>
-          <div className="radio-group">
-            <label className="radio-label label-text">
-              <input
-                style={{ margin: "0", marginRight: "6px" }}
-                className="radio-input"
-                type="radio"
-                name="role"
-                value="user"
-                checked={role === "user"}
-                onChange={handleRoleChange}
-              />{" "}
-              User
-            </label>
-            <label className="radio-label label-text">
-              <input
-                style={{ margin: "0", marginRight: "6px" }}
-                className="radio-input"
-                type="radio"
-                name="role"
-                value="admin"
-                checked={role === "admin"}
-                onChange={handleRoleChange}
-              />{" "}
-              Admin
-            </label>
           </div>
           <label
             style={{ marginBottom: "5px" }}
             className="label-text"
             htmlFor="email"
           >
-            {role === "admin" ? "Mobile Number/Email:" : "Mobile Number:"}
+            Username:
           </label>
           <input
             className="login-input"
-            type="mobile"
+            type="text"
             id="mobile"
-            // value={email}
-            // onChange={handleEmailChange}
+            value={userName}
+            onChange={e => {
+              setUserName(e.target.value);
+              setErrors({ ...errors, userName: '' });
+            }}
             required
           />
+          {errors.userName && <div className="error-text">{errors.userName}</div>}
           <label
             style={{ marginBottom: "5px" }}
             className="label-text"
@@ -78,20 +97,32 @@ const Login2 = () => {
           </label>
           <input
             className="login-input"
-            type="text"
+            type="password"
             id="password"
-            // value={password}
-            // onChange={handlePasswordChange}
+            value={password}
+            onChange={e => {
+              setPassword(e.target.value);
+              setErrors({ ...errors, password: '' });
+              
+            }}
             required
           />
+          {errors.password && <div className="error-text">{errors.password}</div>}
           <div className='checkbox'>
         <input
           type="checkbox"
           required={true}
+          checked={checkboxChecked}
+          onChange={() => {
+            setCheckboxChecked(!checkboxChecked);
+            setErrors({ ...errors, checkbox: '' });
+          }}
         />
-        <div className='checkbox-text'>Agree to all Terms and Conditions?</div>
+        <div className='checkbox-text' required>Agree to all Terms and Conditions?</div>
         </div>
-          <Button text="Login" type="submit" />
+        {errors.checkbox && <div className="error-text">{errors.checkbox}</div>}
+
+          <Button text="Login" type="submit" onClick={handleLoginClick} />
         </div>
       </div>
     </div>

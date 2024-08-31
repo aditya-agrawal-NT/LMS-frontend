@@ -13,7 +13,7 @@ const UsersAdmin = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [userList, setUserList] = useState([]);
   const [pageNumber, setPageNumber] = useState(0);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(11);
   const [totalPages, setTotalPages] = useState(0);
 
   const loadUsers = async () => {

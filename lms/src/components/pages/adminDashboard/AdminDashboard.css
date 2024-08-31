@@ -24,35 +24,33 @@
   }
   .dash-tables{
     display: flex;
-    justify-content: space-evenly;
-    margin: 2.25rem 0 1.8rem 0;
+    justify-content: center;
+    margin: 2.25rem 0 0rem 0;
   }
 
   .user-dash-table{
     display: flex;
     flex-direction: column;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    justify-content: flex-start;
-    background-color: #fff;
     align-items: center;
     width: 45%;
     padding-top: 10px;
   }
 
   .user-dash-table-header{
-    font-family: fantasy;
-    font-size: 1.125rem;
+    font-family: Josefin Sans;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 5px;
   }
   .see-more{
     font-size: 12px;
     color: #006F5E;
     border: none;
-    background-color: #fff;
+    background-color: #f4f4f4;
     cursor: pointer;
     transition: background-color 0.3s;
     padding: 10px 0 7px 0;
-    margin-bottom: 10px;
+    margin: 0.7rem;
   }
   .see-more:hover{
     transform: scale(1.07);
@@ -70,8 +68,9 @@
   }
 
   .book-title{
-    font-family: fantasy;
-    font-size: 1.125rem;
+    font-family: Josefin Sans;
+    font-size: 1.25rem;
+    font-weight: 700;
     margin-top: 5px;
     margin-bottom: 5px;
   }

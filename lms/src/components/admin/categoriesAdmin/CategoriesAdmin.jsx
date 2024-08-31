@@ -13,7 +13,7 @@ const CategoriesAdmin = () => {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [categoryList, setCategoryList] =useState([])
     const [pageNumber, setPageNumber] = useState(0)
-    const [pageSize, setPageSize] = useState(2)
+    const [pageSize, setPageSize] = useState(11)
     const [totalPages, setTotalPages] = useState(0);
 
   const loadCategories = async () => {

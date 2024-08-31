@@ -36,3 +36,20 @@ export async function countAllUsers(){
     const response = await axios.get('http://localhost:8080/api/user/userCount')
     return response.data;
 }
+
+export async function userLogin(data) {
+    const response = await axios.post('http://localhost:8080/api/login', data);
+    return response.data;
+}
+
+export async function getUserByToken(token){
+    const response = await axios.get('http://localhost:8080/api/current-user', {
+
+        headers: {
+            Authorization : token
+        }})
+        return response.data;
+}
+export const logoutUser = () => {
+    window.localStorage.removeItem('authtoken')
+}

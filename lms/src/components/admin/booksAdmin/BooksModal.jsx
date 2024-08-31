@@ -3,6 +3,7 @@ import Modal from '../../shared/modal/Modal'
 import './BooksAdmin.css'
 import Button from '../../shared/button/Button';
 import { createBook, updateBook } from '../../service/BookService';
+import { fetchCategories } from '../../service/CategoryService';
 
 const BooksModal = ({title, isModalOpen, handleCloseModal, handleAddBook, selectedBook}) => {
 
@@ -10,28 +11,43 @@ const [bookData, setBookData] = useState({
   title: "",
     author: "",
     quantity: 0,
-    category: ""
+    categoryName: ""
 })
+const [categoriesList, setcategoriesList] = useState([])
 useEffect(() => {
   if (selectedBook) {
     setBookData({
       title: selectedBook.title,
       author: selectedBook.author,
       quantity: selectedBook.quantity,
-      category: selectedBook.category || ""
+      image: null,
+      categoryName: selectedBook.categoryName || ""
     });
   } else {
     setBookData({
       title: "",
       author: "",
       quantity: 0,
-      category: ""
+      image: null,
+      categoryName: ""
     });
   }
 }, [selectedBook]);
 
+const getCategoriesList =async ()=> { 
+  const categoryData = await fetchCategories()
+  setcategoriesList(categoryData);
+}
+
+useEffect(()=>{
+  getCategoriesList();
+}, [])
+
 const handleAdd = async () => {
   try {
+    const catId = Number(bookData.categoryName);
+    delete bookData.categoryName;
+    bookData.categoryId = catId;
     const data = await createBook(bookData);  // Register the new user
     console.log(data);
     handleAddBook();
@@ -44,6 +60,9 @@ const handleAdd = async () => {
 
 const handleEdit = async () => {
   try {
+    const catId = Number(bookData.categoryName);
+    delete bookData.categoryName;
+    bookData.categoryId = catId;
     const data = await updateBook(bookData, selectedBook?.id);  // Register the new user
     console.log(data);
     handleAddBook();
@@ -80,7 +99,13 @@ const handleChange = (e) => {
           </div>
           <div className="form-group">
             <label htmlFor="quantity" className="label-text" style={{ marginBottom: "5px" }}>Category:</label>
-            <input className="login-input" type="text" id="category" value={bookData.category} onChange={handleChange} required />
+            <select className='login-input modal-select' value={bookData.categoryName} id='categoryName' onChange={handleChange} required>
+            <option value=''>Select Category</option>
+            {categoriesList.map((category)=>(
+              <option key={category.id} value={category.id}>{category.name}</option>
+            )
+            )}
+            </select>
           </div>
           <div className="modal-button">
          {!selectedBook && <Button onClick={handleAdd} type='submit' text={"Add"} />}

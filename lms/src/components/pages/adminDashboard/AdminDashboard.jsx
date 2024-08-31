@@ -7,16 +7,21 @@ import users from "../../../assets/group.png";
 import inHouse from "../../../assets/reading.png";
 import category from "../../../assets/category.png";
 import { useNavigate } from "react-router-dom";
-import { countAllUsers } from "../../service/UserService";
-import { countAllCategories } from "../../service/CategoryService";
+import { countAllUsers, fetchAllUsers } from "../../service/UserService";
+import { countAllCategories, fetchAllCategories } from "../../service/CategoryService";
 import { countAllBooks } from "../../service/BookService";
 import BookCard from "../../shared/bookCard/BookCard";
+import Table from "../../shared/table/Table";
 
 const AdminDashboard = () => {
 
   const [userCount, setUserCount] = useState()
   const [categoryCount, setCategoryCount] = useState()
   const [booksCount, setBooksCount] = useState()
+  const [pageNumber, setPageNumber] = useState(0)
+  const [pageSize, setPageSize] = useState(5)
+  const [categoryDashList, setCategoryDashList] =useState([])
+  const [userDashList, setUserDashList] = useState([])
 
   const navigate = useNavigate();
 
@@ -32,9 +37,34 @@ const AdminDashboard = () => {
   useEffect(() => {
     loadCount();
   },[])
+
+  const loadCategories = async () => {
+    try{
+      const data = await fetchAllCategories(pageNumber, pageSize);
+      setCategoryDashList(data?.content)
+    } catch(error) {
+      console.log(error);
+    }
+  }
+  const loadUsers = async () => {
+    try{
+      const data = await fetchAllUsers(pageNumber, pageSize);
+      setUserDashList(data?.content)
+    } catch(error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(()=> {
+    loadCategories();
+    loadUsers();
+  }, [pageNumber, pageSize]);
+
+
+
   const data = [
     { id: 1, title: "Total Users", number: userCount, logo: users },
-    { id: 2, title: "In-House Users", number: "124", logo: inHouse },
+    { id: 2, title: "In-House Readers+", number: "124", logo: inHouse },
     { id: 3, title: "Total Books", number: booksCount, logo: book },
     { id: 4, title: "Total Categories", number: categoryCount, logo: category },
   ];
@@ -46,44 +76,36 @@ const AdminDashboard = () => {
     { id: 4, title: "The Intelligent Investor", author: "Benjamin Graham", logo: "https://m.media-amazon.com/images/I/41qowEITwjL._SY445_SX342_.jpg" },
     { id: 5, title: "The Silent Patient", author: "Alex Michaelides", logo: "https://m.media-amazon.com/images/I/5177eLEs+YL._SY445_SX342_.jpg" },
   ]
-  const books = [
+
+  const userFields = [
     {
       index: 1,
-      title: "The Great Gatsby",
-      author: "F. Scott Fitzgerald",
-      quantity: 5,
+      title: "ID"
     },
-    { index: 2, title: "1984", author: "George Orwell", quantity: 8 },
+    {
+      index: 2,
+      title: "Name"
+    },
     {
       index: 3,
-      title: "To Kill a Mockingbird",
-      author: "Harper Lee",
-      quantity: 3,
+      title: "Email"
     },
     {
       index: 4,
-      title: "The Great Gatsby",
-      author: "F. Scott Fitzgerald",
-      quantity: 5,
+      title: "Mobile"
     },
-    { index: 5, title: "1984", author: "George Orwell", quantity: 8 },
-  ];
-  const categories = [
+  ]
+
+  const categoryFields = [
     {
       index: 1,
-      title: "Science",
-    },
-    { index: 2, title: "Mathematics" },
-    {
-      index: 3,
-      title: "History",
+      title: "Category ID"
     },
     {
-      index: 4,
-      title: "Geography",
-    },
-    { index: 5, title: "Romance" },
-  ];
+      index: 1,
+      title: "Name"
+    }
+  ]
 
   const handleCategorySeeMoreClick = () => {
     navigate("/categories");
@@ -110,26 +132,7 @@ const AdminDashboard = () => {
       <div className="dash-tables">
         <div className="user-dash-table">
           <p className="user-dash-table-header">Users Table</p>
-          <table className="books-table">
-            <thead>
-              <tr>
-                <th>Index</th>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Available Quantity</th>
-              </tr>
-            </thead>
-            <tbody>
-              {books.map((book) => (
-                <tr key={book.index}>
-                  <td>{book.index}</td>
-                  <td>{book.title}</td>
-                  <td>{book.author}</td>
-                  <td>{book.quantity}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <Table fields={userFields} entries={userDashList} type={'dash-user'}/>
           <div className="see-more-container">
           <button className="see-more" onClick={handleUserSeeMoreClick}>
             See more
@@ -138,22 +141,7 @@ const AdminDashboard = () => {
         </div>
         <div className="user-dash-table">
           <p className="user-dash-table-header">Category Table</p>
-          <table className="books-table">
-            <thead>
-              <tr>
-                <th>Index</th>
-                <th>Title</th>
-              </tr>
-            </thead>
-            <tbody>
-              {categories.map((category) => (
-                <tr key={category.index}>
-                  <td>{category.index}</td>
-                  <td>{category.title}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <Table fields={categoryFields} entries={categoryDashList} type={'dash-category'}/>
           <div className="see-more-container">
           <button className="see-more" onClick={handleCategorySeeMoreClick}>
             See more
@@ -162,7 +150,7 @@ const AdminDashboard = () => {
         </div>
       </div>
       <div className="book-title-parent">
-      <div className="book-title">Top Books</div>
+      <div className="book-title">Featured Books</div>
       <div className="book-line"></div>
       </div>
       <div className="main-content">
