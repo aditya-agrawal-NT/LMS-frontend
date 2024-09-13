@@ -1,72 +1,58 @@
-import React, { useState, useEffect } from "react";
-import Modal from "../../shared/modal/Modal";
-import "./BooksAdmin.css";
-import Button from "../../shared/button/Button";
-import { createBook, updateBook } from "../../../service/BookService";
-import { fetchUsers } from "../../../service/UserService";
-import { createIssuance } from "../../../service/IssuanceService";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { fetchBooks } from "../../../service/BookService";
+import { createIssuance } from "../../../service/IssuanceService";
+import Modal from "../../shared/modal/Modal";
+import Button from "../../shared/button/Button";
 
-const AssignUserModal = ({
+const AssignBookModal = ({
   title,
   isAssignModalOpen,
   closeAssignModal,
-  selectedBook,
+  selectedUser,
 }) => {
+
+
   const initialState = {
-    userId: "",
-    bookId: selectedBook?.id || "",
+    userId: selectedUser?.id || "",
+    bookId: "",
     type: "In house",
     returnTime: "",
   };
-  const [assignBookData, setAssignBookData] = useState({
-    ...initialState,
-    bookId: selectedBook?.id,
-  });
 
-  const resetState = () => setAssignBookData(initialState);
   const navigate = useNavigate();
 
-  // const [first, setfirst] = useState(second)
+  const [assignBookData, setAssignBookData] = useState({
+    ...initialState,
+    userId: selectedUser?.id,
+  });
+  const [bookList, setBookList] = useState([]);
+  const [author, setAuthor] = useState("");
 
-  const [username, setUsername] = useState("");
-  const [userList, setuserList] = useState([]);
-  // useEffect(() => {
-  //   if (selectedBook) {
-  //     setAssignBookData({
-  //       title: selectedBook.title,
-  //     });
-  //   } else {
-  //     setAssignBookData({
-  //       title: "",
-  //       user: "",
-  //       mobileNumber: ""
-  //     });
-  //   }
-  // }, [selectedBook]);
+  const resetState = () => setAssignBookData(initialState);
+  const loadBooks = async () => {
+    const data = await fetchBooks();
+    setBookList(data);
+  };
 
   useEffect(() => {
     setAssignBookData({
-      bookId: selectedBook?.id || "",
+      bookId: "",
       returnTime: "",
       type: "In house",
-      userId: "",
+      userId: selectedUser?.id || "",
     });
-  }, [selectedBook]);
+  }, [selectedUser]);
 
   useEffect(() => {
     if (isAssignModalOpen === false) {
       resetState();
-      setUsername("");
+      setAuthor("");
     }
   }, [isAssignModalOpen]);
 
-  const getUserList = async () => {
-    const userData = await fetchUsers();
-    setuserList(userData);
-  };
   useEffect(() => {
-    getUserList();
+    loadBooks();
   }, []);
 
   const handleAssign = async () => {
@@ -88,100 +74,91 @@ const AssignUserModal = ({
       [id]: value,
     }));
 
-    if (id === "userId") {
+    if (id === "bookId") {
       setAssignBookData((prevData) => {
-        setUsername(getUserDetails(value, "name"));
+        setAuthor(getBookDetails(value, "author"));
         return {
           ...prevData,
-          userId: getUserDetails(value, "id"),
+          bookId: getBookDetails(value, "id"),
         };
       });
     }
   };
 
-  const getUserDetails = (text = "", what = "id") => {
+  const getBookDetails = (text = "", what = "id") => {
     const arr = text.split(".");
     const id = arr[0];
     const name = arr[1];
     console.log(arr, id, name);
 
     return what === "id" ? parseInt(id) : name;
-  };
+  }
 
   return (
     <Modal isOpen={isAssignModalOpen} onClose={closeAssignModal} title={title}>
-      {/* <form onSubmit={handleAddBook}> */}
-      <div>
-        {/* <div className="form-group">
-            <label htmlFor="author" className="label-text" style={{ marginBottom: "5px" }}>Title:</label>
-            <input className="login-input" type="text" id="author" value={assignBookData.title} onChange={handleChange} required/>
-          </div> */}
-
-        <div className="form-group">
-          <label
-            htmlFor="bookId"
-            className="label-text"
-            style={{ marginBottom: "5px" }}
-          >
-            Title:
-          </label>
-          <select
-            defaultValue={selectedBook?.id}
-            className="login-input modal-select"
-            value={selectedBook?.id}
-            id="bookId"
-            disabled
-          >
-            <option selected value={selectedBook?.id}>
-              {selectedBook?.title}
-            </option>
-          </select>
-        </div>
-
+      <div className="">
         <div className="form-group">
           <label
             htmlFor="userId"
             className="label-text"
             style={{ marginBottom: "5px" }}
           >
-            User's Mobile:
+            User:
+          </label>
+          <select
+            id="userId"
+            className="login-input modal-select"
+            defaultValue={selectedUser?.id}
+            value={selectedUser?.id}
+            disabled
+          >
+            <option selected value={selectedUser?.id}>
+              {selectedUser?.name}
+            </option>
+          </select>
+        </div>
+        <div className="form-group">
+          <label
+            htmlFor="bookId"
+            className="label-text"
+            style={{ marginBottom: "5px" }}
+          >
+            Book:
           </label>
           <select
             className="login-input modal-select"
-            value={`${assignBookData.userId}.${username}`}
-            id="userId"
+            value={`${assignBookData.bookId}.${author}`}
+            id="bookId"
             onChange={(e) => {
               handleChange(e);
-              setUsername();
             }}
             required
           >
-            <option value="">Select User</option>
-            {userList.map((user) => (
-              <option key={user.id} value={`${user?.id}.${user?.name}`}>
-                {user.mobileNumber}
+            <option value="">Select Book</option>
+            {bookList.map((book) => (
+              <option key={book?.id} value={`${book?.id}.${book?.author}`}>
+                {book.title}
               </option>
             ))}
           </select>
         </div>
-
         <div className="form-group">
           <label
-            htmlFor="username"
+            htmlFor="author"
             className="label-text"
             style={{ marginBottom: "5px" }}
           >
-            User:
+            Author:
           </label>
           <input
             className="login-input"
             type="text"
-            id="username"
-            value={username}
+            id="author"
+            value={author}
             disabled
           />
         </div>
-
+        
         <div className="form-group">
           <label
             htmlFor="type"
@@ -191,7 +168,7 @@ const AssignUserModal = ({
             Type:
           </label>
           <select
-            defaultValue={selectedBook?.id}
+            defaultValue={assignBookData.type}
             className="login-input modal-select"
             value={assignBookData.type}
             id="type"
@@ -231,4 +208,4 @@ const AssignUserModal = ({
   );
 };
 
-export default AssignUserModal;
+export default AssignBookModal;

@@ -1,7 +1,6 @@
 import React from "react";
 import './Home.css'
 import Login2 from "../login/Login2";
-// import Navbar from "../../shared/navbar/Navbar";
 
 const Home = () => {
   return (

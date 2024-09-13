@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../../shared/modal/Modal';
 import Button from '../../shared/button/Button';
-import { createUser, updateUser } from '../../service/UserService';
+import { createUser, updateUser } from '../../../service/UserService';
 
-const UsersModal = ({ title, isModalOpen, handleCloseModal, handleAddUser, selectedUser }) => {
+const UsersModal = ({ title, isModalOpen, handleCloseModal, handleAddUser, selectedUser,  setToastMessage, setToastType, setShowToast }) => {
   const [userData, setUserData] = useState({
     name: '',
     email: '',
@@ -55,10 +55,15 @@ const UsersModal = ({ title, isModalOpen, handleCloseModal, handleAddUser, selec
   const handleAdd = async () => {
     try {
       const data = await createUser(userData);  // Register the new user
+      setToastMessage("User added successfully!");
+      setShowToast(true);
+      setToastType("success");      
       console.log(data);
       handleAddUser();
     } catch (error) {
-      console.error("Error creating user:", error);
+      setToastMessage("Error occurred while saving the User.");
+      setToastType("error");
+      setShowToast(true);
     } finally {
       handleCloseModal();
     }
@@ -67,10 +72,14 @@ const UsersModal = ({ title, isModalOpen, handleCloseModal, handleAddUser, selec
   const handleEdit = async () => {
     try {
       const data = await updateUser(userData, selectedUser?.mobileNumber);  // Register the new user
-      console.log(data);
+      setToastMessage("User updated successfully!");
+      setShowToast(true);
+      setToastType("success");
       handleAddUser();
     } catch (error) {
-      console.error("Error creating user:", error);
+      setToastMessage("User added successfully!");
+      setShowToast(true);
+      setToastType("success");
     } finally {
       handleCloseModal();
     }

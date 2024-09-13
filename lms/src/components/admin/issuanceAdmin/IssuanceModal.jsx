@@ -6,9 +6,9 @@ import { createBook, updateBook } from '../../../service/BookService';
 import { fetchCategories } from '../../../service/CategoryService';
 import Toast from '../../shared/toast/Toast';
 
-const BooksModal = ({title, isModalOpen, handleCloseModal, handleAddBook, selectedBook, setToastMessage, setToastType, setShowToast}) => {
-const [bookData, setBookData] = useState({
-  title: "",
+const IssuanceModal = ({title, isModalOpen, handleCloseModal, handleAddBook, selectedBook, setToastMessage, setToastType, setShowToast}) => {
+const [issuanceData, setIssuanceData] = useState({
+    title: "",
     author: "",
     quantity: 0,
     categoryName: ""
@@ -127,4 +127,4 @@ const handleChange = (e) => {
   )
 }
 
-export default BooksModal
+export default IssuanceModal

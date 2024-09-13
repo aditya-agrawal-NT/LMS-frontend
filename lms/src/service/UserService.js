@@ -50,6 +50,7 @@ export async function getUserByToken(token){
         }})
         return response.data;
 }
+
 export const logoutUser = () => {
     window.localStorage.removeItem('authtoken')
 }

@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from "react";
 import "./Login2.css";
-import image from "../../../assets/login-image.jpeg";
-import Button from "../../shared/button/Button";
+import './Login.css';
+import image from "../../assets/login-image.jpeg";
+import Button from "../../components/shared/button/Button";
 import { userLogin } from "../../service/UserService";
-import { login } from "../../../redux/authentication/authActions";
+import { login } from "../../redux/authentication/authActions";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux'
 
@@ -47,7 +48,8 @@ const Login2 = () => {
       }
 
       try{
-        const data = await userLogin({userName, password});
+        const encodedPassword = btoa(password);
+        const data = await userLogin({userName, "password": encodedPassword});
         dispatch(login(data));
         window.localStorage.setItem('authtoken', data.token);
       } catch(error){

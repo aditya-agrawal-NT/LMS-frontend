@@ -5,7 +5,9 @@ import { FaSearch } from 'react-icons/fa';
 import Table from '../../shared/table/Table';
 import UsersModal from './UsersModal';
 import Paginate from '../../shared/pagination/Paginate';
-import { fetchAllUsers, createUser, deleteUsers } from '../../service/UserService'; 
+import { fetchAllUsers, createUser, deleteUsers } from '../../../service/UserService'; 
+import AssignBookModal from './AssignBookModal';
+import Toast from '../../shared/toast/Toast';
 
 const UsersAdmin = () => {
   const [search, setSearch] = useState();
@@ -15,6 +17,10 @@ const UsersAdmin = () => {
   const [pageNumber, setPageNumber] = useState(0);
   const [pageSize, setPageSize] = useState(11);
   const [totalPages, setTotalPages] = useState(0);
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastType, setToastType] = useState("");
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
 
   const loadUsers = async () => {
     try {
@@ -57,6 +63,10 @@ const UsersAdmin = () => {
       index: 5,
       title: "Modifications",
     },
+    {
+      index: 6,
+      title: "Issuances",
+    },
   ];
 
   const handleSaveUser = async (userData) => {
@@ -82,9 +92,14 @@ const UsersAdmin = () => {
   const handleDeleteUser = async (user) => {
     try {
       await deleteUsers(user.mobileNumber);
+      setToastMessage("User deleted successfully!");
+      setToastType("success");
+      setShowToast(true);
       await loadUsers();
     } catch (error) {
-      console.error('Error deleting user:', error);
+      setToastMessage("Error occurred while deleting the User.");
+      setToastType("error");
+      setShowToast(true);
     }
   };
 
@@ -103,6 +118,16 @@ const UsersAdmin = () => {
   const handleSearchClick = async () => {
     await loadUsers()
   };
+
+  const closeAssignBook = () => {
+    setIsAssignModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  const openAssignUser = (user = null) => {
+    setSelectedUser(user);
+    setIsAssignModalOpen(true);
+  }
 
   return (
     <div className="admin-section">
@@ -129,6 +154,7 @@ const UsersAdmin = () => {
         entries={userList}
         type={'user'}
         onDeleteClick={handleDeleteUser}
+        onAssignClick={openAssignUser}
       />
       <UsersModal
         title={selectedUser ? 'Edit User' : 'Add New User'}
@@ -137,7 +163,11 @@ const UsersAdmin = () => {
         handleSaveUser={handleSaveUser}
         selectedUser={selectedUser}
         handleAddUser={handleAddUser}
+        setToastMessage={setToastMessage} // Pass toast state to BooksModal
+        setToastType={setToastType}
+        setShowToast={setShowToast}
       />
+      <AssignBookModal title={'Assign Book'} isAssignModalOpen={isAssignModalOpen} closeAssignModal={closeAssignBook} selectedUser={selectedUser} />
       <div className="paginate">
         <Paginate
           currentPage={pageNumber}
@@ -145,6 +175,12 @@ const UsersAdmin = () => {
           onPageChange={setPageNumber}
         />
       </div>
+      <Toast
+        message={toastMessage}
+        type={toastType}
+        show={showToast}
+        onClose={() => setShowToast(false)}
+      />
     </div>
   );
 };

@@ -4,7 +4,7 @@ import {Link, useNavigate} from 'react-router-dom'
 import Button from '../button/Button';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../redux/authentication/authActions';
-import { logoutUser } from '../../service/UserService';
+import { logoutUser } from '../../../service/UserService';
 
 const Sidebar = ({ items }) => {
 

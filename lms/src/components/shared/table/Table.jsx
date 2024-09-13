@@ -5,13 +5,17 @@ import assignUser from "../../../assets/clipboard.png";
 import assignBook from "../../../assets/book.png";
 import Button from '../button/Button';
 import { useNavigate } from "react-router-dom";
+import Tooltip from '../tooltip/Tooltip';
 
 const Table = ({onEditClick, fields, entries, type, onDeleteClick, onAssignClick}) => {
 
     const navigate = useNavigate()
 
-    const handleViewClick = () => {
-        navigate("/issuancesAdmin");
+    const handleViewBookClick = () => {
+        navigate("/book-history");
+      };
+      const handleViewUserClick = () => {
+        navigate("/user-history");
       };
 
   return (
@@ -41,15 +45,29 @@ const Table = ({onEditClick, fields, entries, type, onDeleteClick, onAssignClick
 
               {(type !== 'dash-category' && type !=='dash-user') && <td>
                 <div className="modifications">
-                {type !== 'dash-category' && <img src={edit} alt='edit' className="edit-logo" onClick={()=>onEditClick(item)}></img>}
-                {(type !== 'issuance' && type !== 'dash-category') && <img src={deleteLogo} alt="delete" className="edit-logo" onClick={() => onDeleteClick(item)}></img>}
-                {type === 'user' && <img src={assignBook} alt="assign" className="edit-logo" onClick={()=>onAssignClick(item)}></img>}
-                {type === 'book' && <img src={assignUser} alt="assign" className="edit-logo" onClick={()=>onAssignClick(item)}></img>}
+                {type !== 'dash-category' && 
+                <Tooltip tooltipText="Edit">
+                  <img src={edit} alt='edit' className="edit-logo" onClick={()=>onEditClick(item)}></img>
+                  </Tooltip>}
+                {(type !== 'issuance' && type !== 'dash-category') && 
+                <Tooltip tooltipText="Delete">
+                <img src={deleteLogo} alt="delete" className="edit-logo" onClick={() => onDeleteClick(item)}></img></Tooltip>}
+                {type === 'user' && 
+                <Tooltip tooltipText="Issue">
+                <img src={assignBook} alt="assign" className="edit-logo" onClick={()=>onAssignClick(item)}></img></Tooltip>}
+                {type === 'book' && 
+                <Tooltip tooltipText="Issue">
+                <img src={assignUser} alt="assign" className="edit-logo" onClick={()=>onAssignClick(item)}></img></Tooltip>}
                 </div>
               </td>}
               {type === 'book' && <td>
                 <div className="view-btn">
-                    <Button text='View' className="books-view" onClick={handleViewClick} />
+                    <Button text='View' className="books-view" onClick={handleViewBookClick} />
+                </div>
+              </td>}
+              {type === 'user' && <td>
+                <div className="view-btn">
+                    <Button text='View' className="books-view" onClick={handleViewUserClick} />
                 </div>
               </td>}
             </tr>

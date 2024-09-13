@@ -7,9 +7,9 @@ import users from "../../../assets/group.png";
 import inHouse from "../../../assets/reading.png";
 import category from "../../../assets/category.png";
 import { useNavigate } from "react-router-dom";
-import { countAllUsers, fetchAllUsers } from "../../service/UserService";
-import { countAllCategories, fetchAllCategories } from "../../service/CategoryService";
-import { countAllBooks } from "../../service/BookService";
+import { countAllUsers, fetchAllUsers } from "../../../service/UserService";
+import { countAllCategories, fetchAllCategories } from "../../../service/CategoryService";
+import { countAllBooks } from "../../../service/BookService";
 import BookCard from "../../shared/bookCard/BookCard";
 import Table from "../../shared/table/Table";
 
