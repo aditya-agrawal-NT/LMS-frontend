@@ -7,9 +7,7 @@ import userIssuance from "../../../assets/occupation.png";
 const UserHOC = (Component) => function HOC() {
 
   const sidebarItems = [
-    { path: '/profile', label: 'Profile', img: userProfile},
-    { path: '/history', label: 'Due Issuances', img: userHistory },
-    { path: '/current-issued-books', label: 'Issuance History', img: userIssuance},
+    { path: '/user', label: 'Issuance History', img: userHistory },
   ];
 
   return (

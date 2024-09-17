@@ -149,3 +149,6 @@
     display: flex;
     gap: 1rem;
   }
+  .modal-select{
+    width: 60%;
+  }

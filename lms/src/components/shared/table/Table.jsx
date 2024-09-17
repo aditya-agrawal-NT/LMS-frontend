@@ -5,18 +5,18 @@ import assignUser from "../../../assets/clipboard.png";
 import assignBook from "../../../assets/book.png";
 import Button from '../button/Button';
 import { useNavigate } from "react-router-dom";
+import Tooltip from '../tooltip/Tooltip';
 
-const Table = ({onEditClick, fields, entries, type, onDeleteClick}) => {
+const Table = ({onEditClick, fields, entries, type, onDeleteClick, onAssignClick}) => {
 
     const navigate = useNavigate()
 
-    const handleViewClick = () => {
-        navigate("/issuancesAdmin");
+    const handleViewBookClick = (id) => {
+        navigate(`/book-history/${id}`);
       };
-
-      // const handleAssignBook = () => {
-      //   console.log("assigned")
-      // }
+      const handleViewUserClick = (mobileNumber) => {
+        navigate(`/user-history/${mobileNumber}`);
+      };
 
   return (
     <div className="table-container">
@@ -32,24 +32,93 @@ const Table = ({onEditClick, fields, entries, type, onDeleteClick}) => {
             </tr>
         </thead>
         <tbody>
-          {entries.map((item) => (
+          {entries?.map((item) => (
             item.role !== 'ROLE_ADMIN' && <tr key={item.index}>
+                {Object.entries(item).map(([key, value]) => {
+                  if(type === 'user') {
+                    if (key !== 'role' && key !== 'token') {
+                      return (
+                        <td>{typeof value === 'object' ? value?.name : value}</td>
+                      )
+                    }
+                  } else if (type === 'dash-user') {
+                    if (key !== 'role') {
+                      return (
+                        <td>{typeof value === 'object' ? value?.name : value}</td>
+                      )
+                    }
+                  } else if (type === 'category' || type === 'dash-category') {
+                    return (
+                      <td>{value}</td>
+                    )
+                  } else if (type === 'book') {
+                    if (key !== 'image' && key !== 'categoryName') {
+                      return (
+                        <td>{typeof value === 'object' ? value?.title : value}</td>
+                      )
+                    }
+                  } else if (type === 'issuance') {
+                    if (typeof value === 'object') {
+                      return (
+                        key === 'user' ? <td>{value?.name}</td> : <td>{value?.title}</td>
+                      )
+                    }  
+                    else {
+                      if (key === 'issueTime' || key === 'expectedReturnTime' || key === 'actualReturnTime'){
+                        return (<td>
+                          {new Date(value).toLocaleDateString('en-GB')} {' '} {new Date(value).toLocaleTimeString()}
+                        </td>
+                        )
+                      } else {
+                        return <td>{value}</td>
+                        
+                      }
+                    }
+                  }
+                  else if (type === 'user-history' || type === 'book-history') {
+                    if (typeof value === 'object') {
+                      return (
+                        key === 'user' ? <td>{value?.name}</td> : <td>{value?.title}</td>
+                      )
+                    } 
+                    else {
+                      if (key === 'issueTime' || key === 'expectedReturnTime' || key === 'actualReturnTime'){
+                        return (<td>
+                          {new Date(value).toLocaleDateString('en-GB')} {' '} {new Date(value).toLocaleTimeString()}
+                        </td>
+                        )
+                      } else {
+                        return <td>{value}</td>
+                      }
+                    }
+                  }
+                })}
 
-                {Object.entries(item).map(([key, value]) => (
-                    ((type ==='user' && key !== 'role') || (type==='book' && key !=='image' && key !== 'categoryName') || (type==='category')) && <td key={key}>{value}</td>
-                ))}
-
-              <td>
+              {(type !== 'dash-category' && type !=='dash-user') && <td>
                 <div className="modifications">
-                <img src={edit} alt='edit' className="edit-logo" onClick={()=>onEditClick(item)}></img>
-                <img src={deleteLogo} alt="delete" className="edit-logo" onClick={() => onDeleteClick(item)}></img>
-                {type === 'user' && <img src={assignBook} alt="assign" className="edit-logo" ></img>}
-                {type === 'book' && <img src={assignUser} alt="assign" className="edit-logo" ></img>}
+                {(type !== 'dash-category'  && type !== 'book-history' && type !== 'user-history') && 
+                <Tooltip tooltipText="Edit">
+                  <img src={edit} alt='edit' className="edit-logo" onClick={()=>onEditClick(item)}></img>
+                  </Tooltip>}
+                {(type !== 'issuance' && type !== 'dash-category' && type !== 'book-history' && type !== 'user-history') && 
+                <Tooltip tooltipText="Delete">
+                <img src={deleteLogo} alt="delete" className="edit-logo" onClick={() => onDeleteClick(item)}></img></Tooltip>}
+                {type === 'user' && 
+                <Tooltip tooltipText="Issue">
+                <img src={assignBook} alt="assign" className="edit-logo" onClick={()=>onAssignClick(item)}></img></Tooltip>}
+                {type === 'book' && 
+                <Tooltip tooltipText="Issue">
+                <img src={assignUser} alt="assign" className="edit-logo" onClick={()=>onAssignClick(item)}></img></Tooltip>}
                 </div>
-              </td>
+              </td>}
               {type === 'book' && <td>
                 <div className="view-btn">
-                    <Button text='View' className="books-view" onClick={handleViewClick} />
+                    <Button text='View' className="books-view" onClick={() => handleViewBookClick(item?.id)} />
+                </div>
+              </td>}
+              {type === 'user' && <td>
+                <div className="view-btn">
+                    <Button text='View' className="books-view" onClick={() => handleViewUserClick(item?.mobileNumber)} />
                 </div>
               </td>}
             </tr>

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import AdminHOC from '../../shared/HOC/AdminHOC';
 import Button from '../../shared/button/Button';
-import { FaSearch } from 'react-icons/fa';
 import Table from '../../shared/table/Table';
 import UsersModal from './UsersModal';
 import Paginate from '../../shared/pagination/Paginate';
-import { fetchAllUsers, createUser, deleteUsers } from '../../service/UserService'; 
+import { fetchAllUsers, createUser, deleteUsers } from '../../../service/UserService'; 
+import AssignBookModal from './AssignBookModal';
+import Toast from '../../shared/toast/Toast';
+import ConfirmDeletePopup from '../../shared/confirmDeletePopup/ConfirmDeletePopup';
 
 const UsersAdmin = () => {
   const [search, setSearch] = useState();
@@ -13,9 +15,15 @@ const UsersAdmin = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [userList, setUserList] = useState([]);
   const [pageNumber, setPageNumber] = useState(0);
-  const [pageSize, setPageSize] = useState(2);
+  const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
-
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
+  const [toastType, setToastType] = useState("");
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
+  const [isConfirmPopupOpen, setIsConfirmPopupOpen] = useState(false)
+  const [userToDelete, setUserToDelete] = useState(null)
+  
   const loadUsers = async () => {
     try {
       const data = await fetchAllUsers(pageNumber, pageSize, search);
@@ -57,6 +65,10 @@ const UsersAdmin = () => {
       index: 5,
       title: "Modifications",
     },
+    {
+      index: 6,
+      title: "Issuances",
+    },
   ];
 
   const handleSaveUser = async (userData) => {
@@ -79,14 +91,28 @@ const UsersAdmin = () => {
   };
 
 
-  const handleDeleteUser = async (user) => {
+  const handleDeleteUser = async () => {
     try {
-      await deleteUsers(user.mobileNumber);
+      await deleteUsers(userToDelete?.mobileNumber);
+      setToastMessage("User deleted successfully!");
+      setToastType("success");
+      setShowToast(true);
       await loadUsers();
     } catch (error) {
-      console.error('Error deleting user:', error);
+      setToastMessage("Error occurred while deleting the User.");
+      setToastType("error");
+      setShowToast(true);
+    }  finally {
+      setIsConfirmPopupOpen(false)
+      setUserToDelete(null)
     }
   };
+
+  const handleOpenConfirmDeletePopup = (user) => {
+    setIsConfirmPopupOpen(true);
+    
+    setUserToDelete(user);
+  }
 
   useEffect(() => {
     loadUsers();
@@ -104,6 +130,16 @@ const UsersAdmin = () => {
     await loadUsers()
   };
 
+  const closeAssignBook = () => {
+    setIsAssignModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  const openAssignUser = (user = null) => {
+    setSelectedUser(user);
+    setIsAssignModalOpen(true);
+  }
+
   return (
     <div className="admin-section">
       <div className="admin-page-mid">
@@ -117,7 +153,6 @@ const UsersAdmin = () => {
             onChange={handleSearchChange}
           />
           <div className="search-icon" onClick={handleSearchClick}>
-            <FaSearch />
           </div>
         </div>
         <Button text="Add User" type="button" onClick={() => handleOpenModal(null)} />
@@ -128,7 +163,8 @@ const UsersAdmin = () => {
         fields={fields}
         entries={userList}
         type={'user'}
-        onDeleteClick={handleDeleteUser}
+        onDeleteClick={handleOpenConfirmDeletePopup}
+        onAssignClick={openAssignUser}
       />
       <UsersModal
         title={selectedUser ? 'Edit User' : 'Add New User'}
@@ -137,7 +173,11 @@ const UsersAdmin = () => {
         handleSaveUser={handleSaveUser}
         selectedUser={selectedUser}
         handleAddUser={handleAddUser}
+        setToastMessage={setToastMessage} // Pass toast state to BooksModal
+        setToastType={setToastType}
+        setShowToast={setShowToast}
       />
+      <AssignBookModal title={'Assign Book'} isAssignModalOpen={isAssignModalOpen} closeAssignModal={closeAssignBook} selectedUser={selectedUser} />
       <div className="paginate">
         <Paginate
           currentPage={pageNumber}
@@ -145,6 +185,17 @@ const UsersAdmin = () => {
           onPageChange={setPageNumber}
         />
       </div>
+      <Toast
+        message={toastMessage}
+        type={toastType}
+        show={showToast}
+        onClose={() => setShowToast(false)}
+      />
+      <ConfirmDeletePopup 
+      isOpen={isConfirmPopupOpen}
+      onClose={()=> setIsConfirmPopupOpen(false)}
+      onConfirm={handleDeleteUser}
+      />
     </div>
   );
 };

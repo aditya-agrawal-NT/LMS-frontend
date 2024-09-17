@@ -13,7 +13,7 @@ const BookCard = ({ data }) => {
   return (
     <div className="book-data-card" onClick={handleCardClick}>
       <div className="book-data-details">
-        <img src={data.logo} alt={data.title} className="book-data-photo"></img>
+        <img src={data.image} alt={data.title} className="book-data-photo"></img>
       </div>
       <p className="book-data-name">{data.title}</p>
       <p className="data-author">{data.author}</p>
