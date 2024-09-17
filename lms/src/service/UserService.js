@@ -27,7 +27,6 @@ export async function createUser(userData) {
 }
 
 export async function updateUser(userData, mobileNumber) {
-    console.log(userData)
     const response = await app.put(`http://localhost:8080/api/user/${mobileNumber}`, userData);
     return response.data;
 }

@@ -123,8 +123,6 @@ const AssignBookModal = ({
     const arr = text.split(".");
     const id = arr[0];
     const name = arr[1];
-    console.log(arr, id, name);
-
     return what === "id" ? parseInt(id) : name;
   }
 
@@ -209,7 +207,6 @@ const AssignBookModal = ({
             onChange={handleChange}
             required
           >
-            {/* <option selected value="">Select type</option> */}
             <option selected value={"In house"}>
               {"In house"}
             </option>

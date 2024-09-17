@@ -121,7 +121,6 @@ const UsersModal = ({
         setToastMessage("User added successfully!");
         setShowToast(true);
         setToastType("success");
-        console.log(data);
         handleAddUser();
       } catch (error) {
         setToastMessage("Error occurred while saving the User.");

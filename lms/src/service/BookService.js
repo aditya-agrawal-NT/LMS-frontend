@@ -32,7 +32,6 @@ export async function countAllBooks(){
 }
 
 export async function updateBook(bookData, id) {
-    console.log(bookData)
     const response = await app.put(`http://localhost:8080/api/books/${id}`, bookData);
     return response.data;
 }

@@ -19,7 +19,6 @@
     transition: .3s;
     border: none;
     border-radius: 3px;
-    /* box-shadow: 0 0 5px rgba(231, 191, 118, 0.3); */
   }
   
   .search-icon {
@@ -55,14 +54,12 @@
   justify-content: center;
   align-items: center;
   gap: 1rem;
-  /* margin-left: 3rem; */
   padding-right: 3rem;
 }
 
 .search {
   margin-left: auto;
   display: flex;
-  /* gap: 5px; */
   border: 1px solid #ccc;
   border-radius: 4px;
   padding: 0.25rem 0.5rem;

@@ -69,8 +69,6 @@ const CategoriesAdmin = () => {
   const handleSaveCategory = async (categoryData) => {
     try {
       if (selectedCategory) {
-        // Update existing user
-        //await updatecategory(selectedCategory.mobileNumber, categoryData);
       } else {
         // Create new user
         await createCategory(categoryData);
@@ -99,7 +97,6 @@ const CategoriesAdmin = () => {
   }
 
   const handleOpenConfirmDeletePopup = (category) => {
-    console.log(category);
     setIsConfirmPopupOpen(true);
     setCategoryToDelete(category);
   }

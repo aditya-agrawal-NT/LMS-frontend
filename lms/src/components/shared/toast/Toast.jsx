@@ -11,8 +11,6 @@ const Toast = ({ message, type, show, duration = 3000, onClose }) => {
     }
   }, [show, duration, onClose]);
 
-  console.log({show, message, type});
-
   if (!show) return null;
 
   return (

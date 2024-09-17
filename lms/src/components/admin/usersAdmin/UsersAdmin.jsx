@@ -109,7 +109,6 @@ const UsersAdmin = () => {
   };
 
   const handleOpenConfirmDeletePopup = (user) => {
-    console.log(user);
     setIsConfirmPopupOpen(true);
     
     setUserToDelete(user);

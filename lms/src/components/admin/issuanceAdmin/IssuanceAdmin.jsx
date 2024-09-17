@@ -23,7 +23,6 @@ const IssuanceAdmin = () => {
   const loadIssuances = async () => {
     try{
       const data = await fetchAllIssuances(pageNumber, pageSize, search);
-      console.log('data', data)
       setIssuanceList(data?.content)
       settotalPages(data?.totalPages)
     } catch(error) {
@@ -93,7 +92,6 @@ const IssuanceAdmin = () => {
 
   useEffect(()=>{
     loadIssuances();
-    console.log("useEffect" ,issuanceList)
   },[pageNumber, pageSize])
 
   useEffect(() => {

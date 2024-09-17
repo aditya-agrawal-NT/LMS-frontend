@@ -68,11 +68,9 @@ const handleChange = (e) => {
 
 const handleSubmit = async (e) => {
   e.preventDefault();
-  console.log('handle submit called', categoryData);
   
   try {
     const data = await createCategory(categoryData);  // Register the new category
-    console.log(data);
     handleAddCategory();
   } catch (error) {
     console.error("Error creating user:", error);
@@ -85,7 +83,6 @@ const handleAdd = async () => {
   if (validateCategory()){
   try {
     const data = await createCategory(categoryData);  // Register the new user
-    console.log("Added", data);
     setToastMessage("Category added successfully!");
     setShowToast(true);
     setToastType("success");
@@ -106,13 +103,11 @@ const handleEdit = async () => {
     setToastMessage("Category updated successfully!");
     setShowToast(true);
     setToastType("success");
-    console.log(data);
     handleAddCategory();
   } catch (error) {
-    console.error("Error creating Category:", error);
-    setToastMessage("Category added successfully!");
+    setToastMessage("Error in updating category!");
     setShowToast(true);
-    setToastType("success");
+    setToastType("error");
   } finally {
     handleCloseModal();
   }
@@ -121,7 +116,6 @@ const handleEdit = async () => {
 
   return (
     <Modal isOpen={isModalOpen} onClose={handleCloseModal} title={title}>
-        {/* <form onSubmit={handleSubmit}> */}
         <div>
           <div className="form-group">
             <label htmlFor="title" className="label-text" style={{ marginBottom: "5px" }}>Category Name:</label>

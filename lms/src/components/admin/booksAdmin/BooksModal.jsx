@@ -136,7 +136,6 @@ const BooksModal = ({
         setToastMessage("Book added successfully!");
         setShowToast(true);
         setToastType("success");
-        console.log("Added", data);
         handleAddBook();
       } catch (error) {
         setToastMessage("Error occurred while saving the book.");
@@ -165,7 +164,6 @@ const BooksModal = ({
         setToastMessage("Book updated successfully!");
         setShowToast(true);
         setToastType("success");
-        console.log(data);
         handleAddBook();
       } catch (error) {
         setToastMessage("Book added successfully!");

@@ -25,7 +25,6 @@ export async function createCategory(categoryData) {
     return response.data;
 }
 export async function updateCategory(categoryData, id) {
-    console.log(categoryData)
     const response = await app.put(`http://localhost:8080/api/categories/${id}`, categoryData);
     return response.data;
 }

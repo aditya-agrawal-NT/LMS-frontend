@@ -107,7 +107,6 @@ const BooksAdmin = () => {
   }
 
   const handleOpenConfirmDeletePopup = (book) => {
-    console.log(book);
     setIsConfirmPopupOpen(true);
     setBookToDelete(book);
   }
@@ -166,7 +165,6 @@ const BooksAdmin = () => {
       <BooksModal
         title={selectedBook ? "Edit Book" : "Add New Book"}
         isModalOpen={isModalOpen}
-        // handleSaveBook={handleSaveBook}
         handleCloseModal={handleCloseModal}
         handleAddBook={handleAddBook}
         selectedBook={selectedBook}
