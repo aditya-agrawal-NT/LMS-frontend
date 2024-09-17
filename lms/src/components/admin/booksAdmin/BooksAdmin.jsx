@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from "react";
 import AdminHOC from "../../shared/HOC/AdminHOC";
 import "./BooksAdmin.css";
-import { FaSearch } from "react-icons/fa";
 import Button from "../../shared/button/Button";
 import BooksModal from "./BooksModal";
 import Table from "../../shared/table/Table";
 import Paginate from "../../shared/pagination/Paginate";
 import {
-  createBook,
   deleteBooks,
   fetchAllBooks,
 } from "../../../service/BookService";
 import AssignUserModal from "./AssignUserModal";
 import Toast from "../../shared/toast/Toast";
+import ConfirmDeletePopup from "../../shared/confirmDeletePopup/ConfirmDeletePopup";
 
 const BooksAdmin = () => {
   const [search, setSearch] = useState();
@@ -21,12 +20,15 @@ const BooksAdmin = () => {
   const [selectedBook, setSelectedBook] = useState(null);
   const [bookList, setBookList] = useState([]);
   const [pageNumber, setPageNumber] = useState(0);
-  const [pageSize, setPageSize] = useState(11);
+  const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
 
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [toastType, setToastType] = useState("");
+
+  const [isConfirmPopupOpen, setIsConfirmPopupOpen] = useState(false)
+  const [bookToDelete, setBookToDelete] = useState(null)
 
   const loadBooks = async () => {
     try {
@@ -86,44 +88,9 @@ const BooksAdmin = () => {
     },
   ];
 
-  // const handleSaveBook = async (bookData) => {
-  //   try {
-  //     if (selectedBook) {
-  //       // Update existing book
-  //       await updateBook(selectedBook.id, bookData);
-
-  //       setToastMessage("Book updated successfully!");
-  //       // setShowToast(true);
-  //       setToastType("success");
-  //     } else {
-  //       // Create new book
-  //       await createBook(bookData);
-  //       console.log("Create book Toast Called")
-  //       setToastMessage("Book added successfully!");
-  //       // setShowToast(true);
-  //       setToastType("success");
-  //     }
-      
-  //     setShowToast(true);
-  //     console.log({toastMessage, toastType, showToast})
-  //     await loadBooks();
-  //     console.log("books loaded after operation")
-  //     handleCloseModal(); //new
-  //   } catch (error) {
-  //     setToastMessage("Error occurred while saving the book.");
-  //     setToastType("error");
-  //     setShowToast(true);
-  //   }
-  //   console.log("Toast Message:", toastMessage);
-  //   console.log("Toast Type:", toastType);
-  //   console.log("Show Toast:", showToast);
-  // };
-
-  async function handleDeleteBook(bookObj) {
-    //console.log(bookObj)
+  async function handleDeleteBook() {
     try {
-      await deleteBooks(bookObj.id);
-
+      await deleteBooks(bookToDelete?.id)
       setToastMessage("Book deleted successfully!");
       setToastType("success");
       setShowToast(true);
@@ -133,7 +100,16 @@ const BooksAdmin = () => {
       setToastMessage("Error occurred while deleting the book.");
       setToastType("error");
       setShowToast(true);
+    } finally {
+      setIsConfirmPopupOpen(false)
+      setBookToDelete(null)
     }
+  }
+
+  const handleOpenConfirmDeletePopup = (book) => {
+    console.log(book);
+    setIsConfirmPopupOpen(true);
+    setBookToDelete(book);
   }
 
   const openAssignUser = (book = null) => {
@@ -170,7 +146,6 @@ const BooksAdmin = () => {
               onChange={handleSearchChange}
             ></input>
             <div className="search-icon" onClick={handleSearchClick}>
-              <FaSearch />
             </div>
           </div>
           <Button
@@ -185,7 +160,7 @@ const BooksAdmin = () => {
         fields={fields}
         entries={bookList}
         type={"book"}
-        onDeleteClick={handleDeleteBook}
+        onDeleteClick={handleOpenConfirmDeletePopup}
         onAssignClick={openAssignUser}
       />
       <BooksModal
@@ -217,6 +192,11 @@ const BooksAdmin = () => {
         type={toastType}
         show={showToast}
         onClose={() => setShowToast(false)}
+      />
+      <ConfirmDeletePopup 
+      isOpen={isConfirmPopupOpen}
+      onClose={()=> setIsConfirmPopupOpen(false)}
+      onConfirm={handleDeleteBook}
       />
     </div>
   );

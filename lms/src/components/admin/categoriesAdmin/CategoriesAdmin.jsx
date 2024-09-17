@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AdminHOC from "../../shared/HOC/AdminHOC";
 import Button from "../../shared/button/Button";
-import { FaSearch } from "react-icons/fa";
 import Table from "../../shared/table/Table";
 import CategoriesModal from "./CategoriesModal";
 import Paginate from "../../shared/pagination/Paginate";
@@ -11,6 +10,7 @@ import {
   fetchAllCategories,
 } from "../../../service/CategoryService";
 import Toast from "../../shared/toast/Toast";
+import ConfirmDeletePopup from "../../shared/confirmDeletePopup/ConfirmDeletePopup";
 
 const CategoriesAdmin = () => {
   const [search, setSearch] = useState();
@@ -18,12 +18,14 @@ const CategoriesAdmin = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [categoryList, setCategoryList] = useState([]);
   const [pageNumber, setPageNumber] = useState(0);
-  const [pageSize, setPageSize] = useState(11);
+  const [pageSize, setPageSize] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
 
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [toastType, setToastType] = useState("");
+  const [isConfirmPopupOpen, setIsConfirmPopupOpen] = useState(false)
+  const [categoryToDelete, setCategoryToDelete] = useState(null)
 
   const loadCategories = async () => {
     try {
@@ -54,10 +56,6 @@ const CategoriesAdmin = () => {
       index: 2,
       title: "Category",
     },
-    // {
-    //     index: 3,
-    //     title: "Total Books"
-    // },
     {
       index: 4,
       title: "Actions",
@@ -83,9 +81,9 @@ const CategoriesAdmin = () => {
     }
   };
 
-  async function deleteCategories(categoryObj) {
+  async function deleteCategories() {
     try {
-      const data = await deleteCategory(categoryObj.id);
+      const data = await deleteCategory(categoryToDelete.id);
       setToastMessage("Category deleted successfully!");
       setToastType("success");
       setShowToast(true);
@@ -94,7 +92,16 @@ const CategoriesAdmin = () => {
       setToastMessage("Error occurred while deleting the category.");
       setToastType("error");
       setShowToast(true);
+    } finally {
+      setIsConfirmPopupOpen(false)
+      setBookToDelete(null)
     }
+  }
+
+  const handleOpenConfirmDeletePopup = (category) => {
+    console.log(category);
+    setIsConfirmPopupOpen(true);
+    setCategoryToDelete(category);
   }
 
   useEffect(() => {
@@ -125,7 +132,6 @@ const CategoriesAdmin = () => {
               onChange={handleSearchChange}
             ></input>
             <div className="search-icon" onClick={handleSearchClick}>
-              <FaSearch />
             </div>
           </div>
           <Button
@@ -140,7 +146,7 @@ const CategoriesAdmin = () => {
         fields={fields}
         entries={categoryList}
         type={"category"}
-        onDeleteClick={deleteCategories}
+        onDeleteClick={handleOpenConfirmDeletePopup}
       />
       <CategoriesModal
         title={selectedCategory ? "Edit Category" : "Add New Category"}
@@ -161,6 +167,11 @@ const CategoriesAdmin = () => {
         />
       </div>
       <Toast message={toastMessage} type={toastType} show={showToast} onClose={() => setShowToast(false)} />
+      <ConfirmDeletePopup 
+      isOpen={isConfirmPopupOpen}
+      onClose={()=> setIsConfirmPopupOpen(false)}
+      onConfirm={deleteCategories}
+      />
     </div>
   );
 };

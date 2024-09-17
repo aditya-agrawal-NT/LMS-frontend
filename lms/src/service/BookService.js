@@ -1,17 +1,17 @@
-import axios from "axios"
+import app from "./serviceLMS"
 
 export async function fetchBooks (){
-    const response = await axios.get('http://localhost:8080/api/books')
+    const response = await app.get('http://localhost:8080/api/books')
     return response.data
 }
 
 export async function deleteBooks (id){
-    const response = await axios.delete(`http://localhost:8080/api/books/${id}`)
+    const response = await app.delete(`http://localhost:8080/api/books/${id}`)
     return response.data
 }
 
 export async function fetchAllBooks (pageNumber, pageSize, search){
-    const response = await axios.get('http://localhost:8080/api/books/paginatedBooks', {
+    const response = await app.get('http://localhost:8080/api/books/paginatedBooks', {
         params : {
             pageNumber: Number(pageNumber),
             pageSize: Number(pageSize),
@@ -22,17 +22,17 @@ export async function fetchAllBooks (pageNumber, pageSize, search){
 }
 
 export async function createBook(bookData) {
-    const response = await axios.post('http://localhost:8080/api/books/addBook', bookData);
+    const response = await app.post('http://localhost:8080/api/books/addBook', bookData);
     return response.data;
 }
 
 export async function countAllBooks(){
-    const response = await axios.get('http://localhost:8080/api/books/bookCount')
+    const response = await app.get('http://localhost:8080/api/books/bookCount')
     return response.data;
 }
 
 export async function updateBook(bookData, id) {
     console.log(bookData)
-    const response = await axios.put(`http://localhost:8080/api/books/${id}`, bookData);
+    const response = await app.put(`http://localhost:8080/api/books/${id}`, bookData);
     return response.data;
 }

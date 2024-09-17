@@ -26,8 +26,7 @@ const Navbar = () => {
             <div className='search-icon' onClick={handleClick}><FaSearch /></div>
             </li> */}
             <li className="nav-link">
-              {/* {/* <Link to ="/about" className='navbar-item nav-items'>About Us</Link> */}
-              <Link to ="/contact" className='navbar-item nav-items'>Contact Us</Link> 
+              {/* <Link to ="/contact" className='navbar-item nav-items'>Contact Us</Link>  */}
               <Link to ="/about" className='navbar-item nav-items'>About Us</Link>
             </li>
             {/* <li className="navbar-item"><Link to='/login'><button className="login-logout">Login</button></Link></li> */}

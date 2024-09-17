@@ -7,6 +7,10 @@ import { userLogin } from "../../service/UserService";
 import { login } from "../../redux/authentication/authActions";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from 'react-redux'
+import {
+  validateEmailOrMobile,
+  validateNotEmpty,
+} from "../../utility/validation";
 
 const Login2 = () => {
 
@@ -15,7 +19,6 @@ const Login2 = () => {
 
   const auth = useSelector(state => state.auth);
 
-    const [role, setRole] = useState("user");
     const [userName, setUserName] = useState("")
     const [password, setPassword] = useState("")
     const [checkboxChecked, setCheckboxChecked] = useState(false)
@@ -33,9 +36,14 @@ const Login2 = () => {
   
     const validateForm = () => {
       let formErrors = {};
-      if (!userName) formErrors.userName = "Username is Required!";
-      if (!password) formErrors.password = "Password is Required!";
+      if(!password) formErrors.password = "Password is required!"
       if (!checkboxChecked) formErrors.checkbox = "You must agree!";
+      if (!userName) {
+        formErrors.userName = "Username is required!";
+      } else if (!validateEmailOrMobile(userName)) {
+        formErrors.userName = "Enter a valid email or 10-digit mobile number";
+      }
+
       return formErrors;
     };
   

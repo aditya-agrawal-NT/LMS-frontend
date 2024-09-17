@@ -4,6 +4,9 @@ import { fetchBooks } from "../../../service/BookService";
 import { createIssuance } from "../../../service/IssuanceService";
 import Modal from "../../shared/modal/Modal";
 import Button from "../../shared/button/Button";
+import {
+  validateNotEmpty,
+} from "../../../utility/validation";
 
 const AssignBookModal = ({
   title,
@@ -11,7 +14,6 @@ const AssignBookModal = ({
   closeAssignModal,
   selectedUser,
 }) => {
-
 
   const initialState = {
     userId: selectedUser?.id || "",
@@ -28,6 +30,9 @@ const AssignBookModal = ({
   });
   const [bookList, setBookList] = useState([]);
   const [author, setAuthor] = useState("");
+  const [errors, setErrors] = useState({
+    returnTime: ""
+  });
 
   const resetState = () => setAssignBookData(initialState);
   const loadBooks = async () => {
@@ -35,12 +40,32 @@ const AssignBookModal = ({
     setBookList(data);
   };
 
+  const validate = () => {
+    let isValid = true;
+    const newErrors = {
+      returnTime: ''
+    }
+
+    if (!validateNotEmpty(assignBookData.returnTime)) {
+      newErrors.returnTime = `Return time is required!`
+      isValid = false;
+    }
+
+    if (!isValid) {
+      setErrors(newErrors);
+    }
+    return isValid;
+  }
+
   useEffect(() => {
     setAssignBookData({
       bookId: "",
       returnTime: "",
       type: "In house",
       userId: selectedUser?.id || "",
+    });
+    setErrors({
+      returnTime: ""
     });
   }, [selectedUser]);
 
@@ -56,23 +81,32 @@ const AssignBookModal = ({
   }, []);
 
   const handleAssign = async () => {
-    console.log(assignBookData);
-
-    try {
-      const data = await createIssuance(assignBookData);
-      console.log(data);
-      navigate("/issuance");
-    } catch (error) {
-      console.log(error);
+    if (validate()) {
+      try {
+        const data = await createIssuance(assignBookData);
+        navigate("/issuance");
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
   const handleChange = (e) => {
     const { id, value } = e.target;
+    setErrors({ ...errors, [e.target.id]: "" });
     setAssignBookData((prevData) => ({
       ...prevData,
       [id]: value,
     }));
+
+    if (id === 'returnTime') {
+      setAssignBookData((prev) => {
+        return {
+          ...prev,
+          "returnTime": e.target.value
+        } 
+      })
+    }
 
     if (id === "bookId") {
       setAssignBookData((prevData) => {
@@ -158,7 +192,7 @@ const AssignBookModal = ({
             disabled
           />
         </div>
-        
+
         <div className="form-group">
           <label
             htmlFor="type"
@@ -191,14 +225,17 @@ const AssignBookModal = ({
           >
             Expected Return:
           </label>
-          <input
-            className="login-input"
-            type="datetime-local"
-            id="returnTime"
-            value={assignBookData.returnTime}
-            onChange={handleChange}
-            required
-          />
+          <div>
+            <input
+              className="login-input"
+              type="datetime-local"
+              id="returnTime"
+              value={assignBookData.returnTime}
+              onChange={handleChange}
+              required
+            />
+            {errors.returnTime && <div className="error-text">{errors.returnTime}</div>}
+          </div>
         </div>
         <div className="modal-button">
           <Button onClick={handleAssign} type="submit" text={"Assign"} />

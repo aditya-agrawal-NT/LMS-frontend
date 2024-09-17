@@ -9,11 +9,14 @@ import category from "../../../assets/category.png";
 import { useNavigate } from "react-router-dom";
 import { countAllUsers, fetchAllUsers } from "../../../service/UserService";
 import { countAllCategories, fetchAllCategories } from "../../../service/CategoryService";
-import { countAllBooks } from "../../../service/BookService";
+import { countAllBooks, fetchAllBooks } from "../../../service/BookService";
 import BookCard from "../../shared/bookCard/BookCard";
 import Table from "../../shared/table/Table";
+import { useSelector } from "react-redux";
 
 const AdminDashboard = () => {
+
+  const auth = useSelector(state => state.auth);
 
   const [userCount, setUserCount] = useState()
   const [categoryCount, setCategoryCount] = useState()
@@ -22,6 +25,18 @@ const AdminDashboard = () => {
   const [pageSize, setPageSize] = useState(5)
   const [categoryDashList, setCategoryDashList] =useState([])
   const [userDashList, setUserDashList] = useState([])
+  const [bookDashList, setBookDashList] = useState([])
+
+  const date = new Date();
+
+  const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const monthsOfYear = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+  const dayName = daysOfWeek[date.getDay()];
+  const monthName = monthsOfYear[date.getMonth()];
+  const year = date.getFullYear();
+  const todayDate = date.getDate();
+
 
   const navigate = useNavigate();
 
@@ -55,27 +70,29 @@ const AdminDashboard = () => {
     }
   }
 
+  const loadBooks = async () => {
+    try{
+      const data = await fetchAllBooks(pageNumber, pageSize)
+      setBookDashList(data?.content)
+    } catch(error){
+      console.log(error);
+    }
+  }
+
   useEffect(()=> {
     loadCategories();
     loadUsers();
+    loadBooks();
   }, [pageNumber, pageSize]);
 
 
 
   const data = [
     { id: 1, title: "Total Users", number: userCount, logo: users },
-    { id: 2, title: "In-House Readers+", number: "124", logo: inHouse },
-    { id: 3, title: "Total Books", number: booksCount, logo: book },
+    { id: 2, title: "In-House Readers", number: "12", logo: inHouse },
+    { id: 3, title: "Total Unique Books", number: booksCount, logo: book },
     { id: 4, title: "Total Categories", number: categoryCount, logo: category },
   ];
-
-  const sampleBooks = [
-    { id: 1, title: "The Psychology of Money", author: "Morgan Housel", logo: "https://m.media-amazon.com/images/I/41mxvU9Tu6L._SY445_SX342_.jpg" },
-    { id: 2, title: "IKIGAI", author: "Francesc Miralles", logo: "https://m.media-amazon.com/images/I/81l3rZK4lnL._SY342_.jpg" },
-    { id: 3, title: "Dopamine Detox", author: "Thibaut Meurisse", logo: "https://m.media-amazon.com/images/I/712K3sdLlRL._SY342_.jpg" },
-    { id: 4, title: "The Intelligent Investor", author: "Benjamin Graham", logo: "https://m.media-amazon.com/images/I/41qowEITwjL._SY445_SX342_.jpg" },
-    { id: 5, title: "The Silent Patient", author: "Alex Michaelides", logo: "https://m.media-amazon.com/images/I/5177eLEs+YL._SY445_SX342_.jpg" },
-  ]
 
   const userFields = [
     {
@@ -120,9 +137,9 @@ const AdminDashboard = () => {
       <div className="welcome-admin">
         <div className="welcome-parent">
           <p className="welcome">Welcome</p>
-          <p className="admin-name">Aditya!</p>
+          <p className="admin-name">{auth?.name}!</p>
         </div>
-        <p className="admin-date">Wednesday, August 21, 2024</p>
+        <p className="admin-date">{dayName}, {monthName} {todayDate}, {year}</p>
       </div>
       <div className="main-content">
         {data?.map((data) => (
@@ -131,7 +148,7 @@ const AdminDashboard = () => {
       </div>
       <div className="dash-tables">
         <div className="user-dash-table">
-          <p className="user-dash-table-header">Users Table</p>
+          <p className="user-dash-table-header">Recently Added Users</p>
           <Table fields={userFields} entries={userDashList} type={'dash-user'}/>
           <div className="see-more-container">
           <button className="see-more" onClick={handleUserSeeMoreClick}>
@@ -140,7 +157,7 @@ const AdminDashboard = () => {
           </div>
         </div>
         <div className="user-dash-table">
-          <p className="user-dash-table-header">Category Table</p>
+          <p className="user-dash-table-header">Recently Added Categories</p>
           <Table fields={categoryFields} entries={categoryDashList} type={'dash-category'}/>
           <div className="see-more-container">
           <button className="see-more" onClick={handleCategorySeeMoreClick}>
@@ -150,11 +167,11 @@ const AdminDashboard = () => {
         </div>
       </div>
       <div className="book-title-parent">
-      <div className="book-title">Featured Books</div>
+      <div className="book-title">Recently Added Books</div>
       <div className="book-line"></div>
       </div>
       <div className="main-content">
-        {sampleBooks?.map((data) => (
+        {bookDashList?.map((data) => (
           <BookCard key={data.id} data={data} />
         ))}
       </div>

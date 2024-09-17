@@ -6,6 +6,9 @@ import { createBook, updateBook } from "../../../service/BookService";
 import { fetchUsers } from "../../../service/UserService";
 import { createIssuance } from "../../../service/IssuanceService";
 import { useNavigate } from "react-router-dom";
+import {
+  validateNotEmpty,
+} from "../../../utility/validation";
 
 const AssignUserModal = ({
   title,
@@ -27,24 +30,12 @@ const AssignUserModal = ({
   const resetState = () => setAssignBookData(initialState);
   const navigate = useNavigate();
 
-  // const [first, setfirst] = useState(second)
-
   const [username, setUsername] = useState("");
   const [userList, setuserList] = useState([]);
-  // useEffect(() => {
-  //   if (selectedBook) {
-  //     setAssignBookData({
-  //       title: selectedBook.title,
-  //     });
-  //   } else {
-  //     setAssignBookData({
-  //       title: "",
-  //       user: "",
-  //       mobileNumber: ""
-  //     });
-  //   }
-  // }, [selectedBook]);
-
+  const [errors, setErrors] = useState({
+    returnTime: ""
+  });
+  
   useEffect(() => {
     setAssignBookData({
       bookId: selectedBook?.id || "",
@@ -52,7 +43,27 @@ const AssignUserModal = ({
       type: "In house",
       userId: "",
     });
+    setErrors({
+      returnTime: ""
+    });
   }, [selectedBook]);
+
+  const validate = () => {
+    let isValid = true;
+    const newErrors = {
+      returnTime: ''
+    }
+
+    if (!validateNotEmpty(assignBookData.returnTime)) {
+      newErrors.returnTime = `Return time is required!`
+      isValid = false;
+    }
+
+    if (!isValid) {
+      setErrors(newErrors);
+    }
+    return isValid;
+  }
 
   useEffect(() => {
     if (isAssignModalOpen === false) {
@@ -70,23 +81,32 @@ const AssignUserModal = ({
   }, []);
 
   const handleAssign = async () => {
-    console.log(assignBookData);
-
+    if(validate()){
     try {
       const data = await createIssuance(assignBookData);
-      console.log(data);
       navigate("/issuance");
     } catch (error) {
       console.log(error);
     }
+  }
   };
 
   const handleChange = (e) => {
     const { id, value } = e.target;
+    setErrors({ ...errors, [e.target.id]: "" });
     setAssignBookData((prevData) => ({
       ...prevData,
       [id]: value,
     }));
+
+    if (id === 'returnTime') {
+      setAssignBookData((prev) => {
+        return {
+          ...prev,
+          "returnTime": e.target.value
+        } 
+      })
+    }
 
     if (id === "userId") {
       setAssignBookData((prevData) => {
@@ -110,13 +130,7 @@ const AssignUserModal = ({
 
   return (
     <Modal isOpen={isAssignModalOpen} onClose={closeAssignModal} title={title}>
-      {/* <form onSubmit={handleAddBook}> */}
       <div>
-        {/* <div className="form-group">
-            <label htmlFor="author" className="label-text" style={{ marginBottom: "5px" }}>Title:</label>
-            <input className="login-input" type="text" id="author" value={assignBookData.title} onChange={handleChange} required/>
-          </div> */}
-
         <div className="form-group">
           <label
             htmlFor="bookId"
@@ -214,6 +228,7 @@ const AssignUserModal = ({
           >
             Expected Return:
           </label>
+          <div>
           <input
             className="login-input"
             type="datetime-local"
@@ -222,6 +237,8 @@ const AssignUserModal = ({
             onChange={handleChange}
             required
           />
+          {errors.returnTime && <div className="error-text">{errors.returnTime}</div>}
+          </div>
         </div>
         <div className="modal-button">
           <Button onClick={handleAssign} type="submit" text={"Assign"} />

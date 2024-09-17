@@ -1,83 +1,62 @@
 import React, {useState, useEffect} from 'react'
 import Modal from '../../shared/modal/Modal'
-import './BooksAdmin.css'
 import Button from '../../shared/button/Button';
-import { createBook, updateBook } from '../../../service/BookService';
-import { fetchCategories } from '../../../service/CategoryService';
 import Toast from '../../shared/toast/Toast';
+import { updateIssuance } from '../../../service/IssuanceService';
 
-const IssuanceModal = ({title, isModalOpen, handleCloseModal, handleAddBook, selectedBook, setToastMessage, setToastType, setShowToast}) => {
+const IssuanceModal = ({title, isModalOpen, handleCloseModal, handleEditIssuance, selectedIssuance, setToastMessage, setToastType, setShowToast}) => {
 const [issuanceData, setIssuanceData] = useState({
-    title: "",
-    author: "",
-    quantity: 0,
-    categoryName: ""
+    userId: "",
+    bookId: "",
+    status: "",
+    returnTime: "",
+    type: ""
 })
-const [categoriesList, setcategoriesList] = useState([])
+
 useEffect(() => {
-  if (selectedBook) {
-    setBookData({
-      title: selectedBook.title,
-      author: selectedBook.author,
-      quantity: selectedBook.quantity,
-      image: null,
-      categoryName: selectedBook.categoryName || ""
+  if (selectedIssuance) {
+    setIssuanceData({
+      userId: selectedIssuance?.user?.id,
+      bookId: selectedIssuance?.book?.id,
+      status: selectedIssuance?.status,
+      returnTime: selectedIssuance?.expectedReturnTime,
+      status: selectedIssuance?.status,
+      type: selectedIssuance?.type
     });
   } else {
-    setBookData({
-      title: "",
-      author: "",
-      quantity: 0,
-      image: null,
-      categoryName: ""
+    setIssuanceData({
+    userId: "",
+    bookId: "",
+    status: "",
+    returnTime: "",
+    type: ""
     });
   }
-}, [selectedBook]);
+}, [selectedIssuance]);
 
-const getCategoriesList =async ()=> { 
-  const categoryData = await fetchCategories()
-  setcategoriesList(categoryData);
-}
-
-useEffect(()=>{
-  getCategoriesList();
-}, [])
-
-const handleAdd = async () => {
-  try {
-    const catId = Number(bookData.categoryName);
-    delete bookData.categoryName;
-    bookData.categoryId = catId;
-    const data = await createBook(bookData);  // Register the new user
-    setToastMessage("Book added successfully!");
-    setShowToast(true);
-    setToastType("success");
-    console.log("Added",data);
-    handleAddBook();
-  } catch (error) {
-    setToastMessage("Error occurred while saving the book.");
-      setToastType("error");
-      setShowToast(true);
-  } finally {
-    handleCloseModal();
-  }
-}
 
 const handleEdit = async () => {
   try {
-    const catId = Number(bookData.categoryName);
-    delete bookData.categoryName;
-    bookData.categoryId = catId;
-    const data = await updateBook(bookData, selectedBook?.id);  // Register the new user
-    setToastMessage("Book updated successfully!");
+    console.log(issuanceData);
+    
+    // console.log('Handle edit clicked');
+    
+    // const formattedIssuanceData = {
+    //   ...issuanceData,
+    //   returnTime: new Date(issuanceData?.returnTime).toISOString(), // Ensure the format is correct
+    // };
+    // console.log('Error not found before request');
+    
+    const data = await updateIssuance(issuanceData, selectedIssuance?.id); 
+        setToastMessage("Issuance updated successfully!");
         setShowToast(true);
         setToastType("success");
     console.log(data);
-    handleAddBook();
+    handleEditIssuance();
   } catch (error) {
-    setToastMessage("Book added successfully!");
+    setToastMessage("An Error Occured");
          setShowToast(true);
-         setToastType("success");
+         setToastType("error");
   } finally {
     handleCloseModal();
   }
@@ -85,7 +64,7 @@ const handleEdit = async () => {
 
 const handleChange = (e) => {
   const { id, value } = e.target;
-  setBookData((prevData) => ({
+  setIssuanceData((prevData) => ({
     ...prevData,
     [id]: value
   }));
@@ -96,30 +75,27 @@ const handleChange = (e) => {
         {/* <form onSubmit={handleAddBook}> */}
         <div>
           <div className="form-group">
-            <label htmlFor="title" className="label-text" style={{ marginBottom: "5px" }}>Title:</label>
-            <input className="login-input" type="text" id="title" value={bookData.title} onChange={handleChange} required/>
+            <label htmlFor="status" className="label-text" style={{ marginBottom: "5px" }}>Status:</label>
+            <select
+            defaultValue={selectedIssuance?.id}
+            className="login-input modal-select"
+            value={issuanceData.status}
+            id="status"
+            onChange={handleChange}
+            required
+          >
+            <option selected value={"Returned"}>
+              {"Returned"}
+            </option>
+            <option value={"Issued"}>{"Issued"}</option>
+          </select>
           </div>
           <div className="form-group">
-            <label htmlFor="author" className="label-text" style={{ marginBottom: "5px" }}>Author:</label>
-            <input className="login-input" type="text" id="author" value={bookData.author} onChange={handleChange} required/>
-          </div>
-          <div className="form-group">
-            <label htmlFor="quantity" className="label-text" style={{ marginBottom: "5px" }}>Quantity:</label>
-            <input className="login-input" type="number" id="quantity" value={bookData.quantity} onChange={handleChange} required />
-          </div>
-          <div className="form-group">
-            <label htmlFor="quantity" className="label-text" style={{ marginBottom: "5px" }}>Category:</label>
-            <select className='login-input modal-select' value={bookData.categoryName} id='categoryName' onChange={handleChange} required>
-            <option value=''>Select Category</option>
-            {categoriesList.map((category)=>(
-              <option key={category.id} value={category.id}>{category.name}</option>
-            )
-            )}
-            </select>
+            <label htmlFor="returnTime" className="label-text" style={{ marginBottom: "5px" }}>Return Time:</label>
+            <input className="login-input" type="datetime-local" id="returnTime" value={issuanceData.returnTime} onChange={handleChange} />
           </div>
           <div className="modal-button">
-         {!selectedBook && <Button onClick={handleAdd} type='submit' text={"Add"} />}
-         {selectedBook && <Button onClick={handleEdit} type='submit' text={"Edit"} />}
+         <Button onClick={handleEdit} type='submit' text={"Update"} />
           </div>
           </div>
       </Modal>

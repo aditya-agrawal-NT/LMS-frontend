@@ -19,6 +19,18 @@
     margin-bottom: 10px;
     border-radius: 5px;
   }
+
+  .sidebar-item-active{
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    font-weight: bolder;
+    color: #333;
+    text-decoration: none;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
   
   .sidebar-logout-btn{
     display: flex;

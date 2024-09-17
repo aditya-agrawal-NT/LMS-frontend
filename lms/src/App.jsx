@@ -11,9 +11,9 @@ import Navbar from "./components/shared/navbar/Navbar";
 import BooksAdmin from "./components/admin/booksAdmin/BooksAdmin";
 import CategoriesAdmin from "./components/admin/categoriesAdmin/CategoriesAdmin";
 import UsersAdmin from "./components/admin/usersAdmin/UsersAdmin";
-import Profile from "./components/user/profile/Profile";
-import IssuedBooks from "./components/user/issuedBooks/IssuedBooks";
-import History from "./components/user/history/History";
+// import Profile from "./components/user/profile/Profile";
+// import IssuedBooks from "./components/user/issuedBooks/IssuedBooks";
+// import History from "./components/user/history/History";
 import AdminRoutes from "./routes/AdminRoutes";
 import UserRoutes from "./routes/UserRoutes";
 // import Login2 from "./components/pages/login/Login2";
@@ -22,6 +22,8 @@ import { login } from "./redux/authentication/authActions";
 import { getUserByToken } from "./service/UserService";
 import UserHistory from "./components/admin/userHistory/UserHistory";
 import BookHistory from "./components/admin/bookHistory/BookHistory";
+import ContactUs from "./components/shared/contactUs/ContactUs";
+import AboutUs from "./components/shared/aboutUs/AboutUs";
 
 function App() {
 
@@ -66,15 +68,17 @@ function App() {
         <Route path="/admin" element={<AdminRoutes> <AdminDashboard /> </AdminRoutes>} />
         <Route path="/user" element={<UserRoutes><UserDashboard /></UserRoutes>} />
         <Route path="/" element={<Home />} />
+        <Route path='/contact' element={<ContactUs />} />
+        <Route path='/about' element={<AboutUs />} />
         <Route path="/books" element={<AdminRoutes><BooksAdmin /></AdminRoutes>} />
         <Route path="/users" element={<AdminRoutes><UsersAdmin /></AdminRoutes>} />
         <Route path="/categories" element={<AdminRoutes><CategoriesAdmin /></AdminRoutes>} />
-        <Route path="/profile" element={<UserRoutes><Profile /></UserRoutes>} />
+        {/* <Route path="/profile" element={<UserRoutes><Profile /></UserRoutes>} />
         <Route path="/history" element={<UserRoutes><History /></UserRoutes>} />
-        <Route path="/current-issued-books" element={<UserRoutes><IssuedBooks /></UserRoutes>} />
+        <Route path="/current-issued-books" element={<UserRoutes><IssuedBooks /></UserRoutes>} /> */}
         <Route path="/issuance" element={<AdminRoutes><IssuanceAdmin /></AdminRoutes>} />
-        <Route path="/user-history" element={<AdminRoutes><UserHistory /></AdminRoutes>} />
-        <Route path="/book-history" element={<AdminRoutes><BookHistory /></AdminRoutes>} />
+        <Route path="/user-history/:mobileNumber" element={<AdminRoutes><UserHistory /></AdminRoutes>} />
+        <Route path="/book-history/:id" element={<AdminRoutes><BookHistory /></AdminRoutes>} />
       </Routes>
     </>
   );

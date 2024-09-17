@@ -2,12 +2,21 @@ import React, {useState, useEffect} from 'react'
 import Modal from '../../shared/modal/Modal'
 import Button from '../../shared/button/Button';
 import { createCategory, updateCategory } from '../../../service/CategoryService';
+import {
+  validateAlphabet,
+  validateMinLength,
+  validateNotEmpty,
+} from "../../../utility/validation";
 
 const CategoriesModal = ({title, isModalOpen, handleCloseModal, handleAddCategory, selectedCategory, setToastMessage, setToastType, setShowToast}) => {
 
 const [categoryData, setCategoryData] = useState({
   name: "",
 })
+const [errors, setErrors] = useState({
+  name: ""
+});
+
 useEffect(() => {
   if (selectedCategory) {
     setCategoryData({
@@ -18,10 +27,39 @@ useEffect(() => {
       name: ""
     });
   }
+  setErrors({
+    name: '',
+  })
 }, [selectedCategory]);
+
+const validateCategory = () => {
+
+  categoryData.name = categoryData?.name?.trim();
+
+  let isValid = true;
+  const newErrors = { name: '' }
+
+  if (!validateNotEmpty(categoryData?.name)) {
+      newErrors.name = `Category name can't be empty`;
+      isValid = false;
+  } else if (!validateMinLength(categoryData.name, 3)) {
+      newErrors.name = `Category name should have atleast 3 characters!`
+      isValid = false;
+  } else if (!validateAlphabet(categoryData.name)) {
+      newErrors.name = `Special characters/numbers are not alowed!`
+      isValid = false;
+  }
+
+  if (!isValid) {
+      setErrors(newErrors);
+  }
+
+  return isValid;
+}
 
 const handleChange = (e) => {
   const { id, value } = e.target;
+  setErrors({ ...errors, [e.target.id]: '' });
   setCategoryData((prevData) => ({
     ...prevData,
     [id]: value
@@ -44,6 +82,7 @@ const handleSubmit = async (e) => {
 };
 
 const handleAdd = async () => {
+  if (validateCategory()){
   try {
     const data = await createCategory(categoryData);  // Register the new user
     console.log("Added", data);
@@ -59,7 +98,9 @@ const handleAdd = async () => {
     handleCloseModal();
   }
 }
+}
 const handleEdit = async () => {
+  if(validateCategory){
   try {
     const data = await updateCategory(categoryData, selectedCategory?.id);  // Register the new user
     setToastMessage("Category updated successfully!");
@@ -76,6 +117,7 @@ const handleEdit = async () => {
     handleCloseModal();
   }
 }
+}
 
   return (
     <Modal isOpen={isModalOpen} onClose={handleCloseModal} title={title}>
@@ -83,7 +125,10 @@ const handleEdit = async () => {
         <div>
           <div className="form-group">
             <label htmlFor="title" className="label-text" style={{ marginBottom: "5px" }}>Category Name:</label>
+            <div>
             <input className="login-input" type="text" id="name" value={categoryData.name} onChange={handleChange} required />
+            {errors.name && <div className="error-text">{errors.name}</div>}
+            </div>
           </div>
           <div className="modal-button">
           {!selectedCategory && <Button onClick={handleAdd} type='submit' text={'Add'} />}

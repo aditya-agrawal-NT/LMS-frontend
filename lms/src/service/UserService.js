@@ -1,17 +1,17 @@
-import axios from 'axios'
+import app from "./serviceLMS"
 
 export async function fetchUsers (){
-    const response = await axios.get('http://localhost:8080/api/user')
+    const response = await app.get('http://localhost:8080/api/user')
     return response.data
 }
 
 export async function deleteUsers (mobileNumber){
-    const response = await axios.delete(`http://localhost:8080/api/user/${mobileNumber}`)
+    const response = await app.delete(`http://localhost:8080/api/user/${mobileNumber}`)
     return response.data
 }
 
 export async function fetchAllUsers (pageNumber, pageSize, search=''){
-    const response = await axios.get('http://localhost:8080/api/user/paginatedUsers', {
+    const response = await app.get('http://localhost:8080/api/user/paginatedUsers', {
         params: {
             pageNumber : pageNumber,
             pageSize : pageSize,
@@ -22,29 +22,28 @@ export async function fetchAllUsers (pageNumber, pageSize, search=''){
 }
 
 export async function createUser(userData) {
-    const response = await axios.post('http://localhost:8080/api/user/register', userData);
+    const response = await app.post('http://localhost:8080/api/user/register', userData);
     return response.data;
 }
 
 export async function updateUser(userData, mobileNumber) {
     console.log(userData)
-    const response = await axios.put(`http://localhost:8080/api/user/${mobileNumber}`, userData);
+    const response = await app.put(`http://localhost:8080/api/user/${mobileNumber}`, userData);
     return response.data;
 }
 
 export async function countAllUsers(){
-    const response = await axios.get('http://localhost:8080/api/user/userCount')
+    const response = await app.get('http://localhost:8080/api/user/userCount')
     return response.data;
 }
 
 export async function userLogin(data) {
-    const response = await axios.post('http://localhost:8080/api/login', data);
+    const response = await app.post('http://localhost:8080/api/login', data);
     return response.data;
 }
 
 export async function getUserByToken(token){
-    const response = await axios.get('http://localhost:8080/api/current-user', {
-
+    const response = await app.get('http://localhost:8080/api/current-user', {
         headers: {
             Authorization : token
         }})

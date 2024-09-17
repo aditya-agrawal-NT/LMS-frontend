@@ -1,6 +1,6 @@
 import React from 'react';
 import './Sidebar.css';
-import {Link, useNavigate} from 'react-router-dom' 
+import {NavLink, useNavigate} from 'react-router-dom' 
 import Button from '../button/Button';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../../redux/authentication/authActions';
@@ -19,10 +19,10 @@ const Sidebar = ({ items }) => {
   return (
     <div className="sidebar">
       {items && items.length && items.map((item) => (
-        <Link key={item.path} to={item.path} className="sidebar-item">
+        <NavLink key={item.path} to={item.path} className={({ isActive}) => (isActive ? "sidebar-item-active" : "sidebar-item")}>
             <img className="side-logo" src={item.img} />
             <div className="sidebar-text">{item.label}</div>
-        </Link>
+        </NavLink>
       ))}
       <div className="sidebar-logout-btn">
       <Button text="Logout" type="submit" onClick={handleLogout}/>
