@@ -25,7 +25,7 @@ const Login2 = () => {
           <p className="login-header">Login</p>
           <div className="login-info">
           <p>Welcome back buddy!</p>
-          <p>Please log in to access your library account.</p>
+          <p>Please log in to access your library manager account.</p>
           {/* <p></p> */}
           </div>
           <div className="radio-group">
