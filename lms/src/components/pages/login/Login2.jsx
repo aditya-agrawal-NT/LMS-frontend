@@ -24,7 +24,7 @@ const Login2 = () => {
         <div className="form-container">
           <p className="login-header">Login</p>
           <div className="login-info">
-          <p>Welcome back!</p>
+          <p>Welcome back buddy!</p>
           <p>Please log in to access your library account.</p>
           {/* <p></p> */}
           </div>
